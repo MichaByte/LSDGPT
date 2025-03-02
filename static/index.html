@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Chat</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-color: #f4f4f4;
+      }
+      .chat-container {
+        width: 70vw;
+        height: 70vh;
+        background: white;
+        padding: 20px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+      }
+      .chat-box {
+        height: 300px;
+        overflow-y: auto;
+        border-bottom: 1px solid #ddd;
+        margin-bottom: 10px;
+        padding: 10px;
+      }
+      .input-box {
+        display: flex;
+      }
+      input {
+        flex: 1;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        margin-right: 10px;
+      }
+      button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="chat-container">
+      <div class="chat-box" id="chatBox"></div>
+      <div class="input-box">
+        <input
+          type="text"
+          id="userInput"
+          placeholder="Ask me anything..."
+          onsubmit="sendMessage()"
+        />
+        <button onclick="sendMessage()">Send</button>
+      </div>
+    </div>
+    <script>
+      var userInput= document.getElementById("userInput");
+      userInput.addEventListener("keydown", function (e) {
+        if (e.code === "Enter") {
+          //checks whether the pressed key is "Enter"
+          sendMessage().then(() => {
+            userInput.focus();
+          });
+        }
+      });
+
+      async function sendMessage() {
+        const userInput = document.getElementById("userInput").value;
+        if (!userInput.trim()) return;
+
+        const chatBox = document.getElementById("chatBox");
+        chatBox.innerHTML += `<div><strong>You:</strong> ${userInput}</div>`;
+        document.getElementById("userInput").value = "";
+
+        const response = await fetch(
+          encodeURI("/prompt/?prompt=" + userInput),
+          {
+            method: "GET",
+          }
+        );
+
+        const aiMessage = await response.text();
+        chatBox.innerHTML += `<div><strong>AI:</strong> ${aiMessage.substring(1, aiMessage.length - 2).replace(/\\/g, '')}</div>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }
+    </script>
+  </body>
+</html>
