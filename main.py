@@ -63,6 +63,10 @@ def scramble_prompt(prompt):
     random.shuffle(words)
     return " ".join(words)
 
+@app.get("/")
+def home():
+    return fastapi.responses.RedirectResponse("/static/index.html")
+
 @app.get("/prompt/")
 def get_chat_completions(prompt: str, session_id: str = Depends(get_session_id)):
     print(f"Session {session_id} - Prompt: {prompt}")
